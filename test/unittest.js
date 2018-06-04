@@ -81,7 +81,10 @@ describe( 'OptiHelper', function() {
 
     it ( 'should run repeated tests', function( test_done ) {
         this.timeout( 60e3 );
-        const tconf = Object.assign( { do_profile: true }, test_conf );
+        const tconf = Object.assign( {
+            do_profile: true,
+            report_file: REPORT_FILE,
+        }, test_conf );
         const suite = optihelp( 'Some Suite', tconf );
 
         const logs = [];
@@ -189,6 +192,37 @@ describe( 'OptiHelper', function() {
 
     it ( 'should check for production', function() {
         expect( () => optihelp( 'Test' ) ).to.throw( 'Please run with NODE_ENV=production' );
+    } );
+
+    it ( 'should check support OPTIHELP_FILTER', function( test_done ) {
+        this.timeout( 60e3 );
+
+        process.env.OPTIHELP_FILTER = [ 'Test A,TestB' ];
+
+        const tconf = Object.assign( {
+            test_time: 0.1,
+        }, test_conf );
+
+        const suite = optihelp( 'FilterSuite', tconf )
+            .test( 'Test A', () => {} )
+            .test( 'TestB', () => {} )
+            .test( 'Test C', () => {} );
+
+        // Adds bits of coverage & cleans output
+        const log_bak = console.log;
+        console.log = () => {};
+
+        suite.start( ( report ) => {
+            console.log = log_bak;
+
+            try {
+                expect( report.tests ).to.have.keys( 'Test A', 'TestB' );
+                expect( report.tests ).to.not.have.keys( 'Test C' );
+                test_done();
+            } catch ( e ) {
+                test_done( e );
+            }
+        } );
     } );
 } );
 

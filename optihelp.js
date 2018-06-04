@@ -45,7 +45,7 @@ class OptiHelper {
         profile_ratio = 0.1,
         do_profile = false,
         check_prod = true,
-        report_file = 'optihelp-report.json',
+        report_file = null,
     } = {} ) {
         let model = os.cpus()[0].model;
         model = crypto.createHash( 'sha256' ).update( model ).digest( 'hex' );
@@ -67,6 +67,9 @@ class OptiHelper {
         };
         this._report_file = report_file ? path.resolve( report_file ) : null;
 
+        const { OPTIHELP_FILTER } = process.env;
+        this._filter_tests = OPTIHELP_FILTER ? new Set( OPTIHELP_FILTER.split( ',' ) ) : null;
+
         if ( check_prod && ( process.env.NODE_ENV !== 'production' ) ) {
             throw new Error( 'Please run with NODE_ENV=production' );
         }
@@ -79,6 +82,10 @@ class OptiHelper {
      * @returns {OptiHelper} self for chaining
      */
     test( name, cb ) {
+        if ( this._filter_tests && !this._filter_tests.has( name ) ) {
+            return this;
+        }
+
         const q = this._queue;
         const done = () => {
             const next = q.shift();
