@@ -1,0 +1,7 @@
+node_modules/
+coverage/
+out/
+dist/
+*.tgz
+test/foreign
+prof-*.json

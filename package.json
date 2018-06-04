@@ -1,0 +1,49 @@
+{
+  "name": "@futoin/optihelp",
+  "version": "0.0.1",
+  "description": "FutoIn package optimization helper",
+  "main": "optihelp.js",
+  "files": [
+    "optihelp.js",
+    "futoin.json"
+  ],
+  "engines": {
+    "node": ">=6"
+  },
+  "scripts": {
+    "test": "grunt test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/futoin/util-js-optihelp.git"
+  },
+  "keywords": [
+    "futoin",
+    "optimization"
+  ],
+  "author": {
+    "name": "Andrey Galkin",
+    "email": "andrey@futoin.org"
+  },
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/futoin/util-js-optihelp/issues",
+    "email": "support@futoin.org"
+  },
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "eslint": "^4.19.1",
+    "grunt": "^1.0.2",
+    "grunt-eslint": "^20.1.0",
+    "grunt-jsdoc-to-markdown": "^4.0.0",
+    "grunt-mocha-istanbul": "^5.0.2",
+    "grunt-text-replace": "^0.4.0",
+    "istanbul": "^0.4.5",
+    "mocha": "^5.1.1"
+  },
+  "dependencies": {
+    "microtime": "^2.1.8",
+    "rimraf": "^2.6.2",
+    "v8-profiler": "^5.7.0"
+  }
+}
