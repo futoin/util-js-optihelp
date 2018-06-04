@@ -78,7 +78,8 @@ describe( 'OptiHelper', function() {
 
     it ( 'should run repeated tests', function( test_done ) {
         this.timeout( 60e3 );
-        const suite = optihelp( 'Some Suite', test_conf );
+        const tconf = Object.assign( { do_profile: true }, test_conf );
+        const suite = optihelp( 'Some Suite', tconf );
 
         const logs = [];
         suite._log = ( msg ) => logs.push( msg );
@@ -112,6 +113,7 @@ describe( 'OptiHelper', function() {
                 '  avg:    0.123456s    123.456Hz',
                 '  min:    0.123456s    123.456Hz',
                 '  max:    0.123456s    123.456Hz',
+                'Profiling...',
                 'Comparison to base:',
                 '  avg:    0.123%    0.123456s    123.456Hz',
                 '  min:    0.123%    0.123456s    123.456Hz',
@@ -132,6 +134,7 @@ describe( 'OptiHelper', function() {
                 '  avg:    0.123456s    123.456Hz',
                 '  min:    0.123456s    123.456Hz',
                 '  max:    0.123456s    123.456Hz',
+                'Profiling...',
                 'Comparison to base:',
                 '  avg:    0.123%    0.123456s    123.456Hz',
                 '  min:    0.123%    0.123456s    123.456Hz',
