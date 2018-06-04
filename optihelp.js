@@ -45,6 +45,7 @@ class OptiHelper {
         profile_ratio = 0.1,
         do_profile = false,
         check_prod = true,
+        report_file = 'optihelp-report.json',
     } = {} ) {
         let model = os.cpus()[0].model;
         model = crypto.createHash( 'sha256' ).update( model ).digest( 'hex' );
@@ -58,6 +59,13 @@ class OptiHelper {
         this._warmup_ratio = warmup_ratio;
         this._profile_ratio = profile_ratio;
         this._do_profile = do_profile;
+        this._report = {
+            name,
+            model,
+            date: ( new Date() ).toString(),
+            tests: {},
+        };
+        this._report_file = report_file ? path.resolve( report_file ) : null;
 
         if ( check_prod && ( process.env.NODE_ENV !== 'production' ) ) {
             throw new Error( 'Please run with NODE_ENV=production' );
@@ -87,7 +95,15 @@ class OptiHelper {
      */
     start( cb = () => {} ) {
         const q = this._queue;
-        q.push( cb );
+        q.push( () => {
+            const report_file = this._report_file;
+
+            if ( report_file ) {
+                fs.writeFileSync( report_file, JSON.stringify( this._report ) );
+            }
+
+            cb( this._report );
+        } );
         const next = q.shift();
         next();
     }
@@ -248,6 +264,9 @@ class OptiHelper {
                         const diff = current[m] - base[m];
                         const diff_hz = current[`${m}_hz`] - base[`${m}_hz`];
                         const percent = diff / base[m] * 100;
+                        current[`${m}_diff_base`] = diff;
+                        current[`${m}_diff_base_hz`] = diff_hz;
+                        current[`${m}_diff_base_pct`] = percent;
                         this._log( `  ${m}:    ${percent.toFixed( 3 )}%    ${diff}s    ${diff_hz.toFixed( 3 )}Hz` );
                     }
 
@@ -257,10 +276,14 @@ class OptiHelper {
                         const diff = current[m] - best[m];
                         const diff_hz = current[`${m}_hz`] - best[`${m}_hz`];
                         const percent = diff / best[m] * 100;
+                        current[`${m}_diff_best`] = diff;
+                        current[`${m}_diff_best_hz`] = diff_hz;
+                        current[`${m}_diff_best_pct`] = percent;
                         this._log( `  ${m}:    ${percent.toFixed( 3 )}%    ${diff}s    ${diff_hz.toFixed( 3 )}Hz` );
                     }
                 }
 
+                this._report.tests[name] = data;
                 this._store( stored );
                 this._log( '' );
                 setImmediate( test_done );

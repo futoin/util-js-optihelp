@@ -3,17 +3,20 @@
 const optihelp = require( '../optihelp' );
 const expect = require( 'chai' ).expect;
 const rimraf = require( 'rimraf' );
+const fs = require( 'fs' );
 
 const FAKE_RESULT_DIR = '/tmp/fake_optihelp_result';
+const REPORT_FILE = 'optihelp-report.json';
 
 describe( 'OptiHelper', function() {
-    before( ( done ) => {
-        rimraf( FAKE_RESULT_DIR, done );
-    } );
+    const cleanup = ( done ) => {
+        rimraf( FAKE_RESULT_DIR, () => {
+            rimraf( REPORT_FILE, done );
+        } );
+    };
 
-    after( ( done ) => {
-        rimraf( FAKE_RESULT_DIR, done );
-    } );
+    before( cleanup );
+    after( cleanup );
 
     const test_conf = {
         dst_root : FAKE_RESULT_DIR,
@@ -92,7 +95,7 @@ describe( 'OptiHelper', function() {
         suite.test( 'Test B', ( done ) => {
             setTimeout( done, 100 );
         } );
-        suite.start( () => {
+        suite.start( ( report_obj ) => {
             for ( let i = logs.length - 1; i >= 0; --i ) {
                 logs[i] = logs[i]
                     .replace( / [^ ]+Hz/, ' 123.456Hz' )
@@ -145,7 +148,42 @@ describe( 'OptiHelper', function() {
                 '  max:    0.123%    0.123456s    123.456Hz',
                 '',
             ] );
-            test_done();
+
+            try {
+                const report = JSON.parse( fs.readFileSync( REPORT_FILE ) );
+
+                expect( report ).to.eql( report_obj );
+
+                expect( report ).to.have.keys( 'name', 'model', 'date', 'tests' );
+                expect( report.tests ).to.have.keys( 'Test A', 'Test B' );
+
+                expect( report.tests['Test A'] ).to.have.keys( 'stored', 'current' );
+                expect( report.tests['Test A'].stored ).to.have.keys( 'base', 'best' );
+
+                expect( report.tests['Test A'].stored.base ).to.have.keys(
+                    'total', 'count', 'bench_time',
+                    'avg', 'avg_hz',
+                    'min', 'min_hz',
+                    'max', 'max_hz'
+                );
+
+                expect( report.tests['Test A'].current ).to.have.keys(
+                    'total', 'count', 'bench_time',
+                    'avg', 'avg_hz',
+                    'avg_diff_base_hz', 'avg_diff_base_hz', 'avg_diff_base_pct',
+                    'avg_diff_best_hz', 'avg_diff_best_hz', 'avg_diff_best_pct',
+                    'min', 'min_hz',
+                    'min_diff_base_hz', 'min_diff_base_hz', 'min_diff_base_pct',
+                    'min_diff_best_hz', 'min_diff_best_hz', 'min_diff_best_pct',
+                    'max', 'max_hz',
+                    'max_diff_base_hz', 'max_diff_base_hz', 'max_diff_base_pct',
+                    'max_diff_best_hz', 'max_diff_best_hz', 'max_diff_best_pct'
+                );
+
+                test_done();
+            } catch ( e ) {
+                test_done( e );
+            }
         } );
     } );
 
