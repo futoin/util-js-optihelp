@@ -44,20 +44,20 @@ Module Optimization Helper
 **Kind**: global class  
 
 * [OptiHelper](#OptiHelper)
-    * [new OptiHelper(name, dst)](#new_OptiHelper_new)
+    * [new OptiHelper(name, options)](#new_OptiHelper_new)
     * [.test(name, cb)](#OptiHelper+test) ⇒ [<code>OptiHelper</code>](#OptiHelper)
     * [.start(cb)](#OptiHelper+start)
 
 <a name="new_OptiHelper_new"></a>
 
-### new OptiHelper(name, dst)
+### new OptiHelper(name, options)
 C-tor
 
 
-| Param | Type | Default | Description |
-| --- | --- | --- | --- |
-| name | <code>string</code> |  | suite name |
-| dst | <code>string</code> | <code>&quot;test/results&quot;</code> | destination folder |
+| Param | Type | Description |
+| --- | --- | --- |
+| name | <code>string</code> | suite name |
+| options | <code>object</code> | various options |
 
 <a name="OptiHelper+test"></a>
 

@@ -26,7 +26,7 @@ const os = require( 'os' );
 const crypto = require( 'crypto' );
 const { nowDouble } = require( 'microtime' );
 
-const TEST_TIME = 60;
+const TEST_TIME = 5;
 
 /**
  * Module Optimization Helper
@@ -36,19 +36,21 @@ class OptiHelper {
      * C-tor
      *
      * @param {string} name - suite name
-     * @param {string} dst - destination folder
+     * @param {object} options - various options
      */
-    constructor( name, dst='test/results', {
+    constructor( name, {
+        dst_root = 'test/results',
         test_time = TEST_TIME,
         warmup_ratio = 1,
         profile_ratio = 0.1,
-        do_profile = true,
+        do_profile = false,
+        check_prod = true,
     } = {} ) {
         let model = os.cpus()[0].model;
         model = crypto.createHash( 'sha256' ).update( model ).digest( 'hex' );
 
         this._name = name;
-        this._dst_root = path.resolve( dst );
+        this._dst_root = path.resolve( dst_root );
         this._dst = path.join( this._dst_root, model );
         this._result_file = null;
         this._test_time = test_time;
@@ -56,6 +58,10 @@ class OptiHelper {
         this._warmup_ratio = warmup_ratio;
         this._profile_ratio = profile_ratio;
         this._do_profile = do_profile;
+
+        if ( check_prod && ( process.env.NODE_ENV !== 'production' ) ) {
+            throw new Error( 'Please run with NODE_ENV=production' );
+        }
     }
 
     /**
@@ -108,19 +114,20 @@ class OptiHelper {
 
             const warmup = () => {
                 this._log( `Warming up...` );
-                let i = parseInt( calib_count * this._warmup_ratio ) || 1;
-                let recalib_time = calib_time;
+                recalib_count = parseInt( calib_count * this._warmup_ratio ) || 1;
+                let i = recalib_count;
+                let recalib_time = 0;
 
                 const iterate = () => {
                     const recalib_start = nowDouble();
 
                     test_cb( () => {
-                        const res = nowDouble() - recalib_start;
-                        recalib_time = Math.min( recalib_time, res );
+                        recalib_time += nowDouble() - recalib_start;
 
                         if ( i-- > 0 ) {
                             setImmediate( iterate );
                         } else {
+                            recalib_time /= recalib_count;
                             recalib_count = parseInt( this._test_time / recalib_time ) || 1;
                             this._log( `Re-calibration result: ${( 1/recalib_time ).toFixed( 3 )}Hz, ${recalib_count} cycles` );
                             benchmark( recalib_time );
@@ -144,8 +151,11 @@ class OptiHelper {
                     test_cb( () => {
                         const iter_time = nowDouble() - iter_start;
                         total += iter_time;
-                        min = Math.min( min, iter_time );
-                        max = Math.max( max, iter_time );
+
+                        if ( iter_time > 0 ) {
+                            min = Math.min( min, iter_time );
+                            max = Math.max( max, iter_time );
+                        }
 
                         if ( ++i >= count ) {
                             const bench_time = nowDouble() - bench_start;
