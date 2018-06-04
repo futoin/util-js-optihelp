@@ -40,10 +40,10 @@ class OptiHelper {
      */
     constructor( name, dst='test/results', {
         test_time = TEST_TIME,
-        warmup_ratio = 0.1,
+        warmup_ratio = 1,
         profile_ratio = 0.1,
         do_profile = true,
-    } ) {
+    } = {} ) {
         let model = os.cpus()[0].model;
         model = crypto.createHash( 'sha256' ).update( model ).digest( 'hex' );
 
@@ -62,6 +62,7 @@ class OptiHelper {
      * Execute test several times
      * @param {string} name - test name
      * @param {callable} cb - test callback
+     * @returns {OptiHelper} self for chaining
      */
     test( name, cb ) {
         const q = this._queue;
@@ -71,13 +72,14 @@ class OptiHelper {
         };
 
         q.push( () => this._test( name, cb, done ) );
+        return this;
     }
 
     /**
      * Start execution of tests
      * @param {callable} cb - completion callback
      */
-    start( cb ) {
+    start( cb = () => {} ) {
         const q = this._queue;
         q.push( cb );
         const next = q.shift();
@@ -100,24 +102,38 @@ class OptiHelper {
         const calib_start = nowDouble();
         test_cb( () => {
             const calib_time = nowDouble() - calib_start;
-            const count = parseInt( this._test_time / calib_time ) || 1;
-            this._log( `Calibration result: ${( 1/calib_time ).toFixed( 3 )}Hz, ${count} cycles` );
+            const calib_count = parseInt( this._test_time / calib_time ) || 1;
+            let recalib_count = calib_count;
+            this._log( `Calibration result: ${( 1/calib_time ).toFixed( 3 )}Hz, ${calib_count} cycles` );
 
             const warmup = () => {
                 this._log( `Warming up...` );
-                let i = parseInt( count * this._warmup_ratio ) || 1;
+                let i = parseInt( calib_count * this._warmup_ratio ) || 1;
+                let recalib_time = calib_time;
 
                 const iterate = () => {
-                    if ( i-- > 0 ) {
-                        setImmediate( iterate );
-                    } else {
-                        benchmark();
-                    }
+                    const recalib_start = nowDouble();
+
+                    test_cb( () => {
+                        const res = nowDouble() - recalib_start;
+                        recalib_time = Math.min( recalib_time, res );
+
+                        if ( i-- > 0 ) {
+                            setImmediate( iterate );
+                        } else {
+                            recalib_count = parseInt( this._test_time / recalib_time ) || 1;
+                            this._log( `Re-calibration result: ${( 1/recalib_time ).toFixed( 3 )}Hz, ${recalib_count} cycles` );
+                            benchmark( recalib_time );
+                        }
+                    } );
                 };
+
                 iterate();
             };
 
             const benchmark = () => {
+                const count = recalib_count;
+
                 let i = 0;
                 let min = 0xFFFFFFF;
                 let max = 0;
@@ -174,7 +190,7 @@ class OptiHelper {
                 }
 
                 this._log( `Profiling...` );
-                let i = parseInt( count * this._warmup_ratio ) || 1;
+                let i = parseInt( recalib_count * this._profile_ratio ) || 1;
 
                 const iterate = () => {
                     if ( i-- > 0 ) {
@@ -286,6 +302,8 @@ class OptiHelper {
     }
 }
 
-module.exports = {
-    OptiHelper,
+module.exports = exports = function( ...args ) {
+    return new OptiHelper( ...args );
 };
+
+exports.OptiHelper = OptiHelper;

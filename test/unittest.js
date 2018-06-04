@@ -1,6 +1,6 @@
 'use strict';
 
-const { OptiHelper } = require( '../optihelp' );
+const optihelp = require( '../optihelp' );
 const expect = require( 'chai' ).expect;
 const rimraf = require( 'rimraf' );
 
@@ -16,8 +16,8 @@ describe( 'OptiHelper', function() {
     } );
 
     it ( 'should run tests', function( test_done ) {
-        this.timeout( 30e3 );
-        const suite = new OptiHelper( 'Some Suite', FAKE_RESULT_DIR, { test_time : 2 } );
+        this.timeout( 60e3 );
+        const suite = optihelp( 'Some Suite', FAKE_RESULT_DIR, { test_time : 2 } );
 
         suite.test( 'Test A', () => {
             for ( let c = 1000; c > 0; --c ) {
@@ -31,8 +31,8 @@ describe( 'OptiHelper', function() {
     } );
 
     it ( 'should run repeated tests', function( test_done ) {
-        this.timeout( 30e3 );
-        const suite = new OptiHelper( 'Some Suite', FAKE_RESULT_DIR, { test_time : 2 } );
+        this.timeout( 60e3 );
+        const suite = optihelp( 'Some Suite', FAKE_RESULT_DIR, { test_time : 2 } );
 
         suite.test( 'Test A', () => {
             for ( let c = 1000; c > 0; --c ) {

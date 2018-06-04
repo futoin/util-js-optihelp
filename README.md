@@ -45,7 +45,7 @@ Module Optimization Helper
 
 * [OptiHelper](#OptiHelper)
     * [new OptiHelper(name, dst)](#new_OptiHelper_new)
-    * [.test(name, cb)](#OptiHelper+test)
+    * [.test(name, cb)](#OptiHelper+test) ⇒ [<code>OptiHelper</code>](#OptiHelper)
     * [.start(cb)](#OptiHelper+start)
 
 <a name="new_OptiHelper_new"></a>
@@ -61,10 +61,11 @@ C-tor
 
 <a name="OptiHelper+test"></a>
 
-### optiHelper.test(name, cb)
+### optiHelper.test(name, cb) ⇒ [<code>OptiHelper</code>](#OptiHelper)
 Execute test several times
 
 **Kind**: instance method of [<code>OptiHelper</code>](#OptiHelper)  
+**Returns**: [<code>OptiHelper</code>](#OptiHelper) - self for chaining  
 
 | Param | Type | Description |
 | --- | --- | --- |
