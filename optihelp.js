@@ -24,7 +24,13 @@ const path = require( 'path' );
 const fs = require( 'fs' );
 const os = require( 'os' );
 const crypto = require( 'crypto' );
-const { nowDouble } = require( 'microtime' );
+
+const { hrtime } = process;
+const start_time = () => hrtime();
+const diff_time = ( st ) => {
+    const r = hrtime( st );
+    return r[0] + ( r[1] / 1e9 );
+};
 
 const TEST_TIME = 5;
 
@@ -155,9 +161,9 @@ class OptiHelper {
         this._log( '---' );
         this._log( `Test ${full_name}` );
         this._log( `Calibrating...` );
-        const calib_start = nowDouble();
+        const calib_start = start_time();
         test_cb( () => {
-            const calib_time = nowDouble() - calib_start;
+            const calib_time = diff_time( calib_start );
             const calib_count = parseInt( this._test_time / calib_time ) || 1;
             let recalib_count = calib_count;
             this._log( `Calibration result: ${( 1/calib_time ).toFixed( 3 )}Hz, ${calib_count} cycles` );
@@ -169,10 +175,10 @@ class OptiHelper {
                 let recalib_time = 0;
 
                 const iterate = () => {
-                    const recalib_start = nowDouble();
+                    const recalib_start = start_time();
 
                     test_cb( () => {
-                        recalib_time += nowDouble() - recalib_start;
+                        recalib_time += diff_time( recalib_start );
 
                         if ( i-- > 0 ) {
                             setImmediate( iterate );
@@ -197,9 +203,9 @@ class OptiHelper {
                 let total = 0;
 
                 const iterate = () => {
-                    const iter_start = nowDouble();
+                    const iter_start = start_time();
                     test_cb( () => {
-                        const iter_time = nowDouble() - iter_start;
+                        const iter_time = diff_time( iter_start );
                         total += iter_time;
 
                         if ( iter_time > 0 ) {
@@ -208,7 +214,7 @@ class OptiHelper {
                         }
 
                         if ( ++i >= count ) {
-                            const bench_time = nowDouble() - bench_start;
+                            const bench_time = diff_time( bench_start );
                             const avg = total/count;
                             const avg_hz = 1 / avg;
                             const min_hz = 1 / min;
@@ -257,7 +263,7 @@ class OptiHelper {
                 };
 
                 this._log( `Benchmarking...` );
-                const bench_start = nowDouble();
+                const bench_start = start_time();
                 iterate();
             };
 
