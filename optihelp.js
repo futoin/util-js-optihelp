@@ -67,11 +67,16 @@ class OptiHelper {
             tests: {},
         };
         this._report_file = report_file ? path.resolve( report_file ) : null;
-        this._pass = pass;
 
+        // multi-pass
+        this._pass = pass;
+        this._final_pass = true;
+
+        // filtering
         const { OPTIHELP_FILTER } = process.env;
         this._filter_tests = OPTIHELP_FILTER ? new Set( OPTIHELP_FILTER.split( ',' ) ) : null;
 
+        // Allow only prod
         if ( check_prod && ( process.env.NODE_ENV !== 'production' ) ) {
             throw new Error( 'Please run with NODE_ENV=production' );
         }
@@ -105,10 +110,15 @@ class OptiHelper {
     start( cb = () => {} ) {
         const q = this._queue;
         const orig_len = q.length;
+        let pass = this._pass;
 
-        while ( --this._pass > 0 ) {
+        while ( --pass > 0 ) {
+            this._final_pass = false;
+            const last_run = ( pass === 1 );
+
             q.push( () => {
                 this._log( `======= REPEAT =======` );
+                this._final_pass = last_run;
                 const next = q.shift();
                 next();
             } );
@@ -139,7 +149,7 @@ class OptiHelper {
         } : raw_cb;
 
         this._result_file = path.resolve( this._dst, `${name.replace( / /g, '_' )}.json` );
-        const data = this._load();
+        const data = this._report.tests[name] || this._load();
         const full_name = `${this._name}/${name}`;
 
         this._log( '---' );
@@ -204,12 +214,7 @@ class OptiHelper {
                             const min_hz = 1 / min;
                             const max_hz = 1 / max;
 
-                            this._log( `Benchmark result:` );
-                            this._log( `  avg:    ${avg}s    ${avg_hz.toFixed( 3 )}Hz` );
-                            this._log( `  min:    ${min}s    ${min_hz.toFixed( 3 )}Hz` );
-                            this._log( `  max:    ${max}s    ${max_hz.toFixed( 3 )}Hz` );
-
-                            data.current = {
+                            const new_pass = {
                                 total,
                                 count,
                                 avg,
@@ -220,6 +225,29 @@ class OptiHelper {
                                 max_hz,
                                 bench_time,
                             };
+                            const prev_pass = data.current;
+
+                            if ( prev_pass ) {
+                                for ( let m of [ 'total', 'avg', 'min', 'max', 'bench_time' ] ) {
+                                    prev_pass[m] = Math.min( prev_pass[m], new_pass[m] );
+                                }
+
+                                for ( let m of [ 'count', 'avg_hz', 'min_hz', 'max_hz' ] ) {
+                                    prev_pass[m] = Math.max( prev_pass[m], new_pass[m] );
+                                }
+                            } else {
+                                data.current = new_pass;
+                            }
+
+                            if ( this._final_pass ) {
+                                const current = data.current;
+                                this._log( `Benchmark result:` );
+                                this._log( `  avg:    ${current.avg}s    ${current.avg_hz.toFixed( 3 )}Hz` );
+                                this._log( `  min:    ${current.min}s    ${current.min_hz.toFixed( 3 )}Hz` );
+                                this._log( `  max:    ${current.max}s    ${current.max_hz.toFixed( 3 )}Hz` );
+                            } else {
+                                this._log( `Deferred result, not the last pass.` );
+                            }
 
                             setImmediate( profile );
                         } else {
@@ -265,6 +293,11 @@ class OptiHelper {
             };
 
             const complete = () => {
+                if ( !this._final_pass ) {
+                    setImmediate( test_done );
+                    return;
+                }
+
                 const { stored, current } = data;
 
                 if ( !stored.base ) {
