@@ -19,7 +19,13 @@
  * limitations under the License.
  */
 
-const profiler = require( 'v8-profiler' );
+const profiler = ( () => {
+    try {
+        return require( 'v8-profiler' );
+    } catch ( _ ) {
+        return null;
+    }
+} )();
 const path = require( 'path' );
 const fs = require( 'fs' );
 const os = require( 'os' );
@@ -275,6 +281,11 @@ class OptiHelper {
             const profile = () => {
                 if ( !this._do_profile ) {
                     complete();
+                    return;
+                }
+
+                if ( !profiler ) {
+                    this._log( `"v8-profiler" module is missing` );
                     return;
                 }
 
