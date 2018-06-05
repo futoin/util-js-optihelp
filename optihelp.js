@@ -269,8 +269,8 @@ class OptiHelper {
                     this._log( `Comparison to base:` );
 
                     for ( let m of [ 'avg', 'min', 'max' ] ) {
-                        const diff = base[m] - current[m];
-                        const diff_hz = base[`${m}_hz`] - current[`${m}_hz`];
+                        const diff = current[m] - base[m];
+                        const diff_hz = current[`${m}_hz`] - base[`${m}_hz`];
                         const percent = diff / base[m] * 100;
                         current[`${m}_diff_base`] = diff;
                         current[`${m}_diff_base_hz`] = diff_hz;
@@ -281,8 +281,8 @@ class OptiHelper {
                     this._log( `Comparison to best:` );
 
                     for ( let m of [ 'avg', 'min', 'max' ] ) {
-                        const diff = best[m] - current[m];
-                        const diff_hz = best[`${m}_hz`] - current[`${m}_hz`];
+                        const diff = current[m] - best[m];
+                        const diff_hz = current[`${m}_hz`] - best[`${m}_hz`];
                         const percent = diff / best[m] * 100;
                         current[`${m}_diff_best`] = diff;
                         current[`${m}_diff_best_hz`] = diff_hz;
