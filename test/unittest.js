@@ -22,6 +22,7 @@ describe( 'OptiHelper', function() {
         dst_root : FAKE_RESULT_DIR,
         test_time : 2,
         check_prod : false,
+        pass: 1,
     };
 
     it ( 'should run tests', function( test_done ) {
@@ -81,10 +82,10 @@ describe( 'OptiHelper', function() {
 
     it ( 'should run repeated tests', function( test_done ) {
         this.timeout( 60e3 );
-        const tconf = Object.assign( {
+        const tconf = Object.assign( test_conf, {
             do_profile: true,
             report_file: REPORT_FILE,
-        }, test_conf );
+        } );
         const suite = optihelp( 'Some Suite', tconf );
 
         const logs = [];
@@ -199,9 +200,9 @@ describe( 'OptiHelper', function() {
 
         process.env.OPTIHELP_FILTER = [ 'Test A,TestB' ];
 
-        const tconf = Object.assign( {
+        const tconf = Object.assign( test_conf, {
             test_time: 0.1,
-        }, test_conf );
+        } );
 
         const suite = optihelp( 'FilterSuite', tconf )
             .test( 'Test A', () => {} )
@@ -214,10 +215,39 @@ describe( 'OptiHelper', function() {
 
         suite.start( ( report ) => {
             console.log = log_bak;
+            delete process.env.OPTIHELP_FILTER;
 
             try {
                 expect( report.tests ).to.have.keys( 'Test A', 'TestB' );
                 expect( report.tests ).to.not.have.keys( 'Test C' );
+                test_done();
+            } catch ( e ) {
+                test_done( e );
+            }
+        } );
+    } );
+
+    it ( 'should run multiple passes', function( test_done ) {
+        this.timeout( 60e3 );
+
+        const tconf = Object.assign( test_conf, {
+            test_time: 0.1,
+            pass: 3,
+        } );
+        let repeat_msg = 0;
+
+        const suite = optihelp( 'RepeatSuite', tconf )
+            .test( 'Test A', () => {} );
+
+        suite._log = ( msg ) => {
+            if ( msg === '======= REPEAT =======' ) {
+                ++repeat_msg;
+            }
+        };
+
+        suite.start( ( report ) => {
+            try {
+                expect( repeat_msg ).to.equal( 2 );
                 test_done();
             } catch ( e ) {
                 test_done( e );

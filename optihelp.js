@@ -46,6 +46,7 @@ class OptiHelper {
         do_profile = false,
         check_prod = true,
         report_file = null,
+        pass = 2,
     } = {} ) {
         let model = os.cpus()[0].model;
         model = crypto.createHash( 'sha256' ).update( model ).digest( 'hex' );
@@ -66,6 +67,7 @@ class OptiHelper {
             tests: {},
         };
         this._report_file = report_file ? path.resolve( report_file ) : null;
+        this._pass = pass;
 
         const { OPTIHELP_FILTER } = process.env;
         this._filter_tests = OPTIHELP_FILTER ? new Set( OPTIHELP_FILTER.split( ',' ) ) : null;
@@ -102,6 +104,20 @@ class OptiHelper {
      */
     start( cb = () => {} ) {
         const q = this._queue;
+        const orig_len = q.length;
+
+        while ( --this._pass > 0 ) {
+            q.push( () => {
+                this._log( `======= REPEAT =======` );
+                const next = q.shift();
+                next();
+            } );
+
+            for ( let i = 0; i < orig_len; ++i ) {
+                q.push( q[i] );
+            }
+        }
+
         q.push( () => {
             const report_file = this._report_file;
 
