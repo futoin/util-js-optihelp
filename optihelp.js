@@ -106,7 +106,8 @@ class OptiHelper {
             const report_file = this._report_file;
 
             if ( report_file ) {
-                fs.writeFileSync( report_file, JSON.stringify( this._report ) );
+                const report_data = JSON.stringify( this._report, null, 4 );
+                fs.writeFileSync( report_file, report_data );
             }
 
             cb( this._report );
@@ -337,7 +338,7 @@ class OptiHelper {
         }
 
         const tmp = this._result_file + '.tmp';
-        fs.writeFileSync( tmp, JSON.stringify( stored ) );
+        fs.writeFileSync( tmp, JSON.stringify( stored, null, 4 ) );
         fs.renameSync( tmp, this._result_file );
     }
 }
