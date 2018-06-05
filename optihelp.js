@@ -54,12 +54,15 @@ class OptiHelper {
         report_file = null,
         pass = 2,
     } = {} ) {
-        let model = os.cpus()[0].model;
-        model = crypto.createHash( 'sha256' ).update( model ).digest( 'hex' );
+        const model = os.cpus()[0].model;
+        const node_ver = process.version;
+        const ver_hash = crypto.createHash( 'sha256' )
+            .update( `${node_ver}:${model}` )
+            .digest( 'hex' );
 
         this._name = name;
         this._dst_root = path.resolve( dst_root );
-        this._dst = path.join( this._dst_root, model );
+        this._dst = path.join( this._dst_root, ver_hash );
         this._result_file = null;
         this._test_time = test_time;
         this._queue = [];
@@ -69,6 +72,8 @@ class OptiHelper {
         this._report = {
             name,
             model,
+            node_ver,
+            ver_hash,
             date: ( new Date() ).toString(),
             tests: {},
         };

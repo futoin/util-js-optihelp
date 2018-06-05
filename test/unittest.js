@@ -158,7 +158,7 @@ describe( 'OptiHelper', function() {
 
                 expect( report ).to.eql( report_obj );
 
-                expect( report ).to.have.keys( 'name', 'model', 'date', 'tests' );
+                expect( report ).to.have.keys( 'name', 'model', 'ver_hash', 'node_ver', 'date', 'tests' );
                 expect( report.tests ).to.have.keys( 'Test A', 'Test B' );
 
                 expect( report.tests['Test A'] ).to.have.keys( 'stored', 'current' );
