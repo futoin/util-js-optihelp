@@ -9,7 +9,9 @@
 
 # About
 
-Node.js module optimization helper.
+Node.js module optimization helper. Unlike simple benhcmark tools, FutoIn OptiHelp
+stores base and best results. It helps you to understand how new optimization
+and other changes affect performance of your project over time.
 
 **Documentation** --> [FutoIn Guide](https://futoin.org/docs/miscjs/optihelp/)
 
@@ -27,10 +29,42 @@ or:
 $ yarn add @futoin/optihelp --save
 ```
 
+# Concept & notes
+
+1. Tests are unique per CPU model and Node.js version
+    - The combination is obfuscated with SHA-256 hash for minor security and ease of result management.
+1. History of test results is stored under `test/results` in project root by default.
+    - See OptiHelper `dst_root` option
+1. Upon first run, only benchmark results are shown. This results are called "base".
+1. Upon any subsequent run, OptiHelper also shows different to "base" and "best" ever values.
+1. Benchmark sequence:
+    - calibration run (single shot)
+    - warmup run based on `test_time`*`warmup_ratio` options
+    - actual benchmark for `test_time` option
+    - after all tests are done, additional benchmark passes may run (`pass` option).
+1. Optional profiling uses `v8-profiler` module
+1. The result is dumped in stdout, but an overall machine readable report is also generated.
+1. `process.hrtime()` with nanosecond resolution is used
+
+# Usage
+
+1. Create `optihelp.js` in your tests folder with Suite of tests.
+1. Run the first ever cycle to get "base" results.
+1. Commit changes and the results.
+1. Create a branch of your project, for example `optimization-refdata`.
+    - It would be helpful when you'll want to add extra tests.
+1. Make optimization and/or other changes
+1. Run the `optihelp.js` test again and observe the results.
+
 # Examples
 
 ```javascript
 const optihelp = require('@futoin/optihelp');
+
+optihelp('Suite Name', { test_time : 5, pass : 3 } )
+    .test( 'Async Test', (done) => { /* ... */; done() } )
+    .test( 'Sync Test', () => { /* ... */; } )
+    .start((report) => console.log(report));
 
 ```
 
