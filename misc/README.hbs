@@ -33,20 +33,20 @@ $ yarn add @futoin/optihelp --save
 
 # Concept & notes
 
-1. Tests are unique per CPU model and Node.js version
+1. Tests are unique per CPU model and Node.js version.
     - The combination is obfuscated with SHA-256 hash for minor security and ease of result management.
 1. History of test results is stored under `test/results` in project root by default.
-    - See OptiHelper `dst_root` option
+    - See OptiHelper `dst_root` option.
 1. Upon first run, only benchmark results are shown. This results are called "base".
 1. Upon any subsequent run, OptiHelper also shows different to "base" and "best" ever values.
 1. Benchmark sequence:
-    - calibration run (single shot)
-    - warmup run based on `test_time`*`warmup_ratio` options
-    - actual benchmark for `test_time` option
+    - calibration run (single shot),
+    - warmup run based on `test_time`*`warmup_ratio` options,
+    - actual benchmark for `test_time` option,
     - after all tests are done, additional benchmark passes may run (`pass` option).
-1. Optional profiling uses `v8-profiler` module
+1. Optional profiling uses `v8-profiler` module.
 1. The result is dumped in stdout, but an overall machine readable report is also generated.
-1. `process.hrtime()` with nanosecond resolution is used
+1. `process.hrtime()` with nanosecond resolution is used.
 
 # Usage
 
