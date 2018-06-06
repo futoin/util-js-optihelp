@@ -1,5 +1,5 @@
 
-=== (next) ===
+=== 1.0.1 (2018-06-06) ===
 FIXED: improved option documenation
 
 === 1.0.0 (2018-06-06) ===
