@@ -9,7 +9,9 @@
 
 # About
 
-Node.js module optimization helper. Unlike simple benhcmark tools, FutoIn OptiHelp
+FutoIn OptiHelp is Node.js module optimization helper.
+
+Unlike simple benchmark tools, FutoIn OptiHelp
 stores base and best results. It helps you to understand how new optimization
 and other changes affect performance of your project over time.
 
@@ -88,10 +90,18 @@ Module Optimization Helper
 C-tor
 
 
-| Param | Type | Description |
-| --- | --- | --- |
-| name | <code>string</code> | suite name |
-| options | <code>object</code> | various options |
+| Param | Type | Default | Description |
+| --- | --- | --- | --- |
+| name | <code>string</code> |  | suite name |
+| options | <code>object</code> |  | various options |
+| options.pass | <code>integer</code> | <code>2</code> | how many passes to run |
+| options.dst_root | <code>string</code> | <code>&quot;&#x27;test/results&#x27;&quot;</code> | result history folder |
+| options.test_time | <code>float</code> | <code>5</code> | how long to run a single pass of each test in seconds |
+| options.warmup_ratio | <code>float</code> | <code>1</code> | how long to warmup based on test_time |
+| options.profile_ratio | <code>float</code> | <code>0.1</code> | how long to profile based on test_time |
+| options.do_profile | <code>boolean</code> | <code>false</code> | run v8-profiler, if true |
+| options.check_prod | <code>boolean</code> | <code>true</code> | ensure running in production env |
+| options.report_file | <code>string</code> | <code>null</code> | store report in file, if true |
 
 <a name="OptiHelper+test"></a>
 

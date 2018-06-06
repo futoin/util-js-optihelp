@@ -1,4 +1,7 @@
 
+=== (next) ===
+FIXED: improved option documenation
+
 === 1.0.0 (2018-06-06) ===
 Final release
 

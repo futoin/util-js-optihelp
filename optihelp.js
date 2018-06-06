@@ -49,6 +49,14 @@ class OptiHelper {
      *
      * @param {string} name - suite name
      * @param {object} options - various options
+     * @param {integer} options.pass=2 - how many passes to run
+     * @param {string} options.dst_root='test/results' - result history folder
+     * @param {float} options.test_time=5 - how long to run a single pass of each test in seconds
+     * @param {float} options.warmup_ratio=1 - how long to warmup based on test_time
+     * @param {float} options.profile_ratio=0.1 - how long to profile based on test_time
+     * @param {boolean} options.do_profile=false - run v8-profiler, if true
+     * @param {boolean} options.check_prod=true - ensure running in production env
+     * @param {string} options.report_file=null - store report in file, if true
      */
     constructor( name, {
         dst_root = 'test/results',
