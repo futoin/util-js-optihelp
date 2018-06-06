@@ -97,6 +97,9 @@ class OptiHelper {
         if ( check_prod && ( process.env.NODE_ENV !== 'production' ) ) {
             throw new Error( 'Please run with NODE_ENV=production' );
         }
+
+        // Error check
+        this._test_names = new Set();
     }
 
     /**
@@ -109,6 +112,12 @@ class OptiHelper {
         if ( this._filter_tests && !this._filter_tests.has( name ) ) {
             return this;
         }
+
+        if ( this._test_names.has( name ) ) {
+            throw new Error( `Test "${name}" already exists!` );
+        }
+
+        this._test_names.add( name );
 
         const q = this._queue;
         const done = () => {

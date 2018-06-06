@@ -25,6 +25,16 @@ describe( 'OptiHelper', function() {
         pass: 1,
     };
 
+
+    it ( 'should check for production', function() {
+        expect( () => optihelp( 'Test' ) ).to.throw( 'Please run with NODE_ENV=production' );
+    } );
+
+    it ( 'should check for duplicate test name', function() {
+        expect( () => optihelp( 'Test', { check_prod: false } ).test( 'A' ).test( 'A' ) )
+            .to.throw( 'Test "A" already exists!' );
+    } );
+
     it ( 'should run tests', function( test_done ) {
         this.timeout( 60e3 );
         const suite = optihelp( 'Some Suite', test_conf );
@@ -189,10 +199,6 @@ describe( 'OptiHelper', function() {
                 test_done( e );
             }
         } );
-    } );
-
-    it ( 'should check for production', function() {
-        expect( () => optihelp( 'Test' ) ).to.throw( 'Please run with NODE_ENV=production' );
     } );
 
     it ( 'should check support OPTIHELP_FILTER', function( test_done ) {
