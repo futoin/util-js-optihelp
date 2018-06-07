@@ -54,6 +54,7 @@ class OptiHelper {
      * @param {float} options.test_time=5 - how long to run a single pass of each test in seconds
      * @param {float} options.warmup_ratio=1 - how long to warmup based on test_time
      * @param {float} options.profile_ratio=0.1 - how long to profile based on test_time
+     * @param {float} options.bench_delay=1 - benchmark delays after warmup
      * @param {boolean} options.do_profile=false - run v8-profiler, if true
      * @param {boolean} options.check_prod=true - ensure running in production env
      * @param {string} options.report_file=null - store report in file, if true
@@ -63,6 +64,7 @@ class OptiHelper {
         test_time = TEST_TIME,
         warmup_ratio = 1,
         profile_ratio = 0.1,
+        bench_delay = 1,
         do_profile = false,
         check_prod = true,
         report_file = null,
@@ -82,6 +84,7 @@ class OptiHelper {
         this._queue = [];
         this._warmup_ratio = warmup_ratio;
         this._profile_ratio = profile_ratio;
+        this._bench_delay = bench_delay;
         this._do_profile = do_profile;
         this._report = {
             name,
@@ -214,7 +217,7 @@ class OptiHelper {
                             recalib_time /= recalib_count;
                             recalib_count = parseInt( this._test_time / recalib_time ) || 1;
                             this._log( `Re-calibration result: ${( 1/recalib_time ).toFixed( 3 )}Hz, ${recalib_count} cycles` );
-                            benchmark( recalib_time );
+                            setTimeout( () => benchmark( recalib_time ), this._bench_delay );
                         }
                     } );
                 };

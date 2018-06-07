@@ -99,6 +99,7 @@ C-tor
 | options.test_time | <code>float</code> | <code>5</code> | how long to run a single pass of each test in seconds |
 | options.warmup_ratio | <code>float</code> | <code>1</code> | how long to warmup based on test_time |
 | options.profile_ratio | <code>float</code> | <code>0.1</code> | how long to profile based on test_time |
+| options.bench_delay | <code>float</code> | <code>1</code> | benchmark delays after warmup |
 | options.do_profile | <code>boolean</code> | <code>false</code> | run v8-profiler, if true |
 | options.check_prod | <code>boolean</code> | <code>true</code> | ensure running in production env |
 | options.report_file | <code>string</code> | <code>null</code> | store report in file, if true |

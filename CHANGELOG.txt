@@ -1,4 +1,7 @@
 
+=== (next) ===
+NEW: benchmark delay after warmup support
+
 === 1.0.1 (2018-06-06) ===
 FIXED: improved option documenation
 
