@@ -1,4 +1,7 @@
 
+=== (next) ===
+CHANGED: dependency maintenance
+
 === 1.1.0 (2018-06-07) ===
 NEW: benchmark delay after warmup support
 
