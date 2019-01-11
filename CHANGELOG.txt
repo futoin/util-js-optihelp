@@ -1,4 +1,8 @@
 
+=== (next) ===
+CHANGED: removed outdated v8-profiler which causes troubles on v10
+CHANGED: updated dependencies
+
 === 1.1.1 (2018-08-11) ===
 CHANGED: dependency maintenance
 

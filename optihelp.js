@@ -306,6 +306,7 @@ class OptiHelper {
 
                 if ( !profiler ) {
                     this._log( `"v8-profiler" module is missing` );
+                    complete();
                     return;
                 }
 
