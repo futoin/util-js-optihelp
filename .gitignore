@@ -5,3 +5,4 @@ dist/
 *.tgz
 test/foreign
 prof-*.json
+/.nyc_output

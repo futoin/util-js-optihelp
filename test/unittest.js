@@ -88,8 +88,8 @@ describe( 'OptiHelper', function() {
                     '',
                 ] );
                 test_done();
-            } catch (e) {
-                test_done(e);
+            } catch ( e ) {
+                test_done( e );
             }
         } );
     } );
