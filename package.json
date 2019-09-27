@@ -32,16 +32,16 @@
   },
   "devDependencies": {
     "chai": "^4.2.0",
-    "eslint": "^6.0.1",
+    "eslint": "^6.4.0",
     "grunt": "^1.0.4",
     "grunt-eslint": "^22.0.0",
     "grunt-jsdoc-to-markdown": "^4.0.0",
     "grunt-simple-nyc": "^3.0.0",
     "grunt-text-replace": "^0.4.0",
-    "lodash": "^4.17.14",
-    "mocha": "^6.1.4",
+    "lodash": "^4.17.15",
+    "mocha": "^6.2.0",
     "nyc": "^14.1.1",
-    "rimraf": "^2.6.3"
+    "rimraf": "^3.0.0"
   },
   "dependencies": {},
   "optionalDependencies": {}
