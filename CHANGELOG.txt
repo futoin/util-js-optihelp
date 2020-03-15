@@ -1,3 +1,6 @@
+=== (next) ===
+CHANGED: dependency maintenance
+
 === 1.2.2 (2019-09-27) ===
 CHANGED: dropped Node.js v6 support
 CHANGED: dependency maintenance
