@@ -1,6 +1,6 @@
 {
   "name": "@futoin/optihelp",
-  "version": "1.2.4",
+  "version": "1.2.5",
   "description": "FutoIn package optimization helper",
   "main": "optihelp.js",
   "files": [
