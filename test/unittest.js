@@ -2,17 +2,16 @@
 
 const optihelp = require( '../optihelp' );
 const expect = require( 'chai' ).expect;
-const rimraf = require( 'rimraf' );
+const { rimrafSync } = require( 'rimraf' );
 const fs = require( 'fs' );
 
 const FAKE_RESULT_DIR = '/tmp/fake_optihelp_result';
 const REPORT_FILE = 'optihelp-report.json';
 
 describe( 'OptiHelper', function() {
-    const cleanup = ( done ) => {
-        rimraf( FAKE_RESULT_DIR, () => {
-            rimraf( REPORT_FILE, done );
-        } );
+    const cleanup = () => {
+        rimrafSync( FAKE_RESULT_DIR );
+        rimrafSync( REPORT_FILE );
     };
 
     before( cleanup );
